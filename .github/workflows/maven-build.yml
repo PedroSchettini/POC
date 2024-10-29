@@ -27,3 +27,11 @@ jobs:
           cache: maven
       - name: Build with Maven Wrapper
         run: ./mvnw -B package
+      - name: Deploy EC2
+        run: |
+             echo "${{secrets.KEY_EC2}}" > private_key && chmod 400 private_key
+             ssh -o StrictHostKeyChecking=no -i "private_key" ubuntu@ec2-52-203-196-207.compute-1.amazonaws.com "
+                 cd /home/ubuntu/POC &&
+                 git pull origin main &&
+                 mvn clean package -DskipTests &&
+                 ./executar.sh "
